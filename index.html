@@ -1,324 +1,295 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>WolfAuction Workshop — Depredador de Subastas</title>
-  <meta name="description" content="Workshop en dos sesiones: aprende a detectar oportunidades ocultas, comprar al mejor precio y revender con márgenes explosivos en subastas de EE. UU."/>
-
-  <!-- Performance hints -->
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WolfAuction – Convierte Subastas en Dinero Real</title>
+  <meta name="description" content="Curso WolfAuction: aprende a comprar en subastas en Estados Unidos y vender con márgenes altos. Método paso a paso con mínima experiencia y riesgo controlado." />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-
-  <!-- Icons (opcional) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
-
-  <!-- Fuente -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet"/>
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0b0f14; --panel:#11161d; --ink:#e9eef4; --muted:#a9b2bd;
-      --cyan:#28c0ff; --gold:#f2c14e; --gold-2:#ffd77a;
+      --bg:#0b0f14;
+      --card:#101820;
+      --muted:#6b7a8c;
+      --text:#f5f7fa;
+      --brand:#00D084; /* verde premium */
+      --brand-2:#15b88a;
+      --accent:#ffd166;
+      --danger:#ff5a5f;
+      --ring: rgba(0,208,132,.4);
+      --max: 1100px;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
     }
-    body{
-      background:
-        radial-gradient(1200px 600px at 10% -10%, #16202a 0%, transparent 60%),
-        radial-gradient(1000px 600px at 110% 10%, #151a22 0%, transparent 55%),
-        var(--bg);
-      color:var(--ink);
-      font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
-    }
-    .hero{ padding:64px 0 56px; }
-    .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid rgba(40,192,255,.25);
-      box-shadow:0 8px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04);
-      backdrop-filter:blur(8px);
-      border-radius:22px;
-    }
-    .title{
-      line-height:1.12; font-weight:800; font-size:clamp(30px,4.5vw,52px);
-      background:linear-gradient(90deg, var(--cyan) 0%, var(--gold) 100%);
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-      text-shadow:0 0 18px rgba(40,192,255,.18), 0 0 10px rgba(242,193,78,.12);
-    }
-    .subtitle{ color:var(--muted); font-size:clamp(14px,2.2vw,18px); }
-    .video-wrap{ background:linear-gradient(145deg, rgba(40,192,255,.25), rgba(242,193,78,.25)); padding:2px; border-radius:18px; }
-    .brand-logo{ height:56px; width:auto; filter:drop-shadow(0 6px 18px rgba(40,192,255,.22)); }
-
-    .cta-btn{
-      border:0; color:#0b0f14; font-weight:800; letter-spacing:.4px;
-      padding:14px 26px; border-radius:12px;
-      background:linear-gradient(90deg, var(--gold) 0%, var(--gold-2) 100%);
-      box-shadow:0 8px 22px rgba(242,193,78,.35);
-      text-transform:uppercase;
-      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease, opacity .3s ease;
-    }
-    .cta-btn:hover{ transform:translateY(-2px); box-shadow:0 14px 32px rgba(242,193,78,.45); filter:brightness(1.05); }
-
-    .section{ padding:56px 0; }
-    .card-lux{
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:16px; height:100%;
-    }
-    .check{ color:var(--gold-2); }
-    footer{ color:#93a0ad; font-size:14px; padding:28px 0 40px; }
-
-    /* Contador flotante */
-    .timer-float{
-      position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:1050;
-      display:inline-flex; align-items:center; gap:.6rem;
-      padding:10px 16px; border-radius:14px;
-      background:rgba(11,15,20,.7);
-      border:1px solid rgba(40,192,255,.45);
-      box-shadow:0 10px 28px rgba(0,0,0,.45);
-      backdrop-filter:blur(8px);
-    }
-    .timer-float .label{ color:var(--muted); font-weight:700; letter-spacing:.3px; }
-    .timer-float .time{
-      font-variant-numeric:tabular-nums; font-size:1.125rem; color:#eaf6ff;
-      text-shadow:0 0 10px rgba(40,192,255,.35); font-weight:800; letter-spacing:.5px;
-    }
-
-    /* Animaciones */
-    .will-animate.hidden{ opacity:0; transform:translateY(12px); }
-    .animate-in{ opacity:1 !important; transform:none !important; }
-    @keyframes popIn{ 0%{opacity:0;transform:scale(.9) translateY(8px);filter:blur(2px)}60%{opacity:1;transform:scale(1.03) translateY(0);filter:blur(0)}100%{opacity:1;transform:scale(1)} }
-    .pop-in{ animation:popIn .8s ease-out both; }
-    @keyframes fadeUp{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:none}}
-    @keyframes slideLeft{0%{opacity:0;transform:translateX(24px)}100%{opacity:1;transform:none}}
-    @keyframes slideRight{0%{opacity:0;transform:translateX(-24px)}100%{opacity:1;transform:none}}
-    @keyframes zoomIn{0%{opacity:0;transform:scale(.95)}100%{opacity:1;transform:none}}
-    .ani-fadeUp{animation:fadeUp .7s ease-out both}
-    .ani-left{animation:slideLeft .7s ease-out both}
-    .ani-right{animation:slideRight .7s ease-out both}
-    .ani-zoom{animation:zoomIn .6s ease-out both}
-
-    /* CTA oculto hasta los 2 min por JS (fallback) */
-    #ctaDelayed, #ctaDelayed2, #ctaDelayed3 { opacity:0; pointer-events:none; }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#0b0f14 0%,#0b131b 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .wrap{max-width:var(--max);margin:0 auto;padding:24px}
+    .grid{display:grid;gap:28px}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card.pad{padding:28px}
+    .kicker{color:var(--accent);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem}
+    h1{font-size:clamp(28px,4vw,48px);line-height:1.1;margin:10px 0 8px}
+    h2{font-size:clamp(22px,3vw,32px);line-height:1.2;margin:0 0 8px}
+    p.lead{color:#dbe7ff;opacity:.95;font-size:clamp(16px,1.8vw,19px);max-width:900px}
+    .muted{color:var(--muted)}
+    .hero{padding-top:26px}
+    .video{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+    .video iframe,.video video{width:100%;aspect-ratio:16/9;display:block}
+    .cta{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--brand),var(--brand-2));color:#042018;border:none;border-radius:14px;padding:16px 22px;font-weight:800;font-size:18px;cursor:pointer;box-shadow:0 10px 18px rgba(0,208,132,.25);transform:translateZ(0);transition:filter .2s, transform .2s}
+    .cta:hover{filter:brightness(1.05);transform:translateY(-1px)}
+    .cta.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand);box-shadow:none}
+    .center{text-align:center}
+    .badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;justify-content:center}
+    .badge{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:8px 12px;border-radius:999px;font-size:.88rem;color:#cfe4ff}
+    .list{display:grid;gap:12px}
+    .list li{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:14px;border-radius:12px}
+    .list .ico{width:22px;height:22px;display:inline-grid;place-items:center;background:rgba(0,208,132,.15);border:1px solid var(--brand);border-radius:8px;color:var(--brand);font-weight:900}
+    .split{display:grid;gap:26px;grid-template-columns:1.2fr .9fr}
+    @media (max-width:900px){.split{grid-template-columns:1fr}}
+    .timeline{display:grid;gap:14px}
+    .step{display:grid;gap:6px;border-left:3px solid var(--brand);padding-left:14px}
+    .testimonial{display:grid;gap:12px}
+    .quote{font-size:1rem;color:#d9e6ff;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);padding:16px;border-radius:12px}
+    .price{display:grid;gap:8px;text-align:center}
+    .price .tag{font-size:38px;font-weight:900;letter-spacing:-.02em}
+    .strike{color:#94a3b8;text-decoration:line-through;margin-right:8px}
+    .guarantee{display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);padding:16px;border-radius:12px}
+    .count{display:flex;gap:12px;justify-content:center;align-items:center}
+    .count .box{min-width:70px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:10px;border-radius:12px;text-align:center}
+    footer{opacity:.85}
+    .block-cta{display:flex;justify-content:center}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);margin:8px 0 22px}
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .5s ease, transform .5s ease}
+    .reveal.show{opacity:1;transform:none}
+    .cta-deferred{display:none}
   </style>
 </head>
 <body>
-  <!-- Contador flotante -->
-  <div class="timer-float" role="status" aria-live="polite" aria-atomic="true">
-    <span class="label"><i class="bi bi-hourglass-split"></i> Oferta termina en</span>
-    <span id="countdown" class="time">05:00</span>
-  </div>
 
-  <!-- HERO -->
-  <header class="container hero text-center">
-    <div class="row justify-content-center">
-      <div class="col-12 col-lg-10 panel p-4 p-md-5">
-        <img
-          src="https://lh3.googleusercontent.com/a/ACg8ocLFyVn42-ugn_EvKQwi2oUBFVwfl9Z7hrF7wK5BxjNngVUaAA=s576-c-no"
-          alt="WolfAuction" class="brand-logo mb-3 will-animate hidden"/>
-
-        <h1 class="title mb-3 will-animate hidden">Conviértete en un Depredador de Subastas</h1>
-
-        <p class="subtitle mb-3 will-animate hidden">
-          Ingresa al workshop de <strong>cero a experto</strong> en subastas: en dos sesiones intensivas descubrirás cómo
-          <strong>detectar oportunidades ocultas</strong> y <strong>comprar y vender con ganancias explosivas</strong> en los nichos más rentables de EE. UU.
-          (autos, pallets, storages, maquinaria y más).
+  <!-- ======= BLOQUE 1: HERO ======= -->
+  <header class="wrap hero">
+    <div class="grid">
+      <div class="card pad reveal">
+        <div class="kicker">Workshop & Curso • WolfAuction</div>
+        <h1>Convierte Subastas en Dinero Real</h1>
+        <p class="lead">
+          Aprende a comprar autos, pallets, storages, maquinaria y equipos biomédicos en Estados Unidos y a revenderlos con márgenes altos. Método paso a paso para empezar desde cero, minimizar riesgos y escalar con crédito empresarial.
         </p>
+        <div class="video" id="video">
+          <!-- Reemplaza el src por tu video (YouTube/Vimeo/MP4) -->
+          <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  title="WolfAuction Intro"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen></iframe>
+        </div>
 
-        <div class="video-wrap mb-4 will-animate hidden">
-          <div class="ratio ratio-16x9 rounded-4 overflow-hidden">
-            <iframe
-              src="https://www.youtube.com/embed/rlVah0sdOt4?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=rlVah0sdOt4"
-              title="Workshop WolfAuction" allow="autoplay; encrypted-media; picture-in-picture"
-              allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <!-- CTA diferido: aparecerá a los 4 minutos via JS externo -->
+        <div class="center" style="margin-top:16px">
+          <button class="cta cta-deferred" id="cta-hero" data-delay-ms="240000">
+            Reservar mi cupo ahora
+          </button>
+          <div class="badges">
+            <span class="badge">Sin experiencia previa</span>
+            <span class="badge">Acceso desde cualquier país</span>
+            <span class="badge">Sistema paso a paso</span>
           </div>
         </div>
 
-        <!-- CTA (aparece a los 2 minutos con animación) -->
-        <a id="ctaDelayed" href="#checkout" class="btn cta-btn btn-lg d-inline-block will-animate hidden">
-          Obtener acceso ahora
-        </a>
+        <p class="center" style="margin-top:12px;color:#d1f7ea">
+          Dale play y descubre cómo nuestros alumnos multiplican su inversión con subastas reales.
+        </p>
       </div>
     </div>
   </header>
 
-  <!-- BENEFICIOS -->
-  <section class="container section">
-    <div class="row justify-content-center">
-      <div class="col-12 col-lg-10">
-        <h2 class="fw-bold text-center mb-4 will-animate hidden">Beneficios clave del Workshop</h2>
-        <div class="row g-3 g-md-4">
-          <div class="col-md-6 col-lg-4 will-animate hidden">
-            <div class="card-lux p-4 h-100">
-              <h5 class="mb-2"><i class="bi bi-check2-circle check"></i> Empieza sin experiencia</h5>
-              <p class="mb-0">Registro, verificación y acceso desde cualquier país.</p>
-            </div>
+  <main>
+
+    <!-- ======= BLOQUE 2: BENEFICIOS ======= -->
+    <section class="wrap">
+      <div class="card pad reveal">
+        <h2>Beneficios del Curso</h2>
+        <ul class="list">
+          <li><span class="ico">✓</span> <strong>Accesible:</strong> Participa desde cualquier país, sin experiencia previa.</li>
+          <li><span class="ico">✓</span> <strong>Exclusivo:</strong> Acceso a Copart, IAAI, Amazon Liquidations y storages.</li>
+          <li><span class="ico">✓</span> <strong>Apalancamiento:</strong> Compra con crédito empresarial aunque hoy no tengas capital.</li>
+          <li><span class="ico">✓</span> <strong>Rentabilidad:</strong> Reventa en eBay, Facebook Marketplace y OfferUp.</li>
+          <li><span class="ico">✓</span> <strong>Seguridad:</strong> Método paso a paso para reducir riesgos.</li>
+          <li><span class="ico">✓</span> <strong>Escalabilidad:</strong> De compras pequeñas a un negocio de subastas en grande.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ======= BLOQUE 3: AUTORIDAD ======= -->
+    <section class="wrap">
+      <div class="card pad reveal split">
+        <div>
+          <h2>Aprende de un Experto que Ya lo Logró</h2>
+          <p class="muted">
+            Carlos Molano, creador de WolfAuction. Más de 200 entrenamientos, enfoque práctico y un sistema diseñado para comprar inteligente, minimizar riesgos y multiplicar ganancias. Te guía para abrir empresa, construir crédito y dominar los nichos más rentables.
+          </p>
+          <div class="divider"></div>
+          <ul class="list">
+            <li><span class="ico">★</span> Experiencia real en subastas y reventa multi–canal.</li>
+            <li><span class="ico">★</span> Plantillas y checklists listas para usar.</li>
+            <li><span class="ico">★</span> Soporte en comunidad privada.</li>
+          </ul>
+        </div>
+        <div>
+          <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=1200&auto=format&fit=crop" alt="Instructor WolfAuction" style="border-radius:14px;border:1px solid rgba(255,255,255,.08)">
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= CTA INTERMEDIO (entre 3 y 4) ======= -->
+    <section class="wrap block-cta">
+      <button class="cta reveal" data-scroll="#checkout">Quiero empezar ahora</button>
+    </section>
+
+    <!-- ======= BLOQUE 4: CONTENIDO / TRANSFORMACIÓN ======= -->
+    <section class="wrap">
+      <div class="card pad reveal">
+        <h2>Lo Que Vas a Aprender (Paso a Paso)</h2>
+        <div class="timeline">
+          <div class="step">
+            <strong>Módulo 1 – Fundamentos WolfAuction</strong>
+            <span class="muted">Ecosistema de subastas en EE. UU., nichos y ruta estratégica.</span>
           </div>
-          <div class="col-md-6 col-lg-4 will-animate hidden">
-            <div class="card-lux p-4 h-100">
-              <h5 class="mb-2"><i class="bi bi-graph-up-arrow check"></i> Precio máximo & comisiones</h5>
-              <p class="mb-0">Fórmula y calculadora para no sobrepagar y asegurar margen.</p>
-            </div>
+          <div class="step">
+            <strong>Módulo 2 – Base Legal & Crédito</strong>
+            <span class="muted">Abrir empresa (LLC/Corp), cuenta bancaria y plan de crédito empresarial.</span>
           </div>
-          <div class="col-md-6 col-lg-4 will-animate hidden">
-            <div class="card-lux p-4 h-100">
-              <h5 class="mb-2"><i class="bi bi-bag-check check"></i> Estrategia de reventa</h5>
-              <p class="mb-0">Canales ganadores y guiones de publicación.</p>
-            </div>
+          <div class="step">
+            <strong>Módulo 3 – Plataformas & Acceso</strong>
+            <span class="muted">Registro, verificación y uso de Copart, IAAI, Amazon Liquidations y storages.</span>
           </div>
-          <div class="col-md-6 col-lg-4 will-animate hidden">
-            <div class="card-lux p-4 h-100">
-              <h5 class="mb-2"><i class="bi bi-credit-card2-front check"></i> Crédito empresarial</h5>
-              <p class="mb-0">Financia compras (0–12 meses APR) y escala inventario.</p>
-            </div>
+          <div class="step">
+            <strong>Módulo 4 – Cálculo de Valor</strong>
+            <span class="muted">Precio máximo, comisiones ocultas, transporte y margen real.</span>
           </div>
-          <div class="col-md-6 col-lg-4 will-animate hidden">
-            <div class="card-lux p-4 h-100">
-              <h5 class="mb-2"><i class="bi bi-shield-check check"></i> Riesgo controlado</h5>
-              <p class="mb-0">Debida diligencia por nicho y errores costosos que evitar.</p>
-            </div>
+          <div class="step">
+            <strong>Módulo 5 – Estrategias por Nicho</strong>
+            <span class="muted">Autos, pallets, bodegas, maquinaria y equipos biomédicos.</span>
           </div>
-          <div class="col-md-6 col-lg-4 will-animate hidden">
-            <div class="card-lux p-4 h-100">
-              <h5 class="mb-2"><i class="bi bi-people check"></i> Comunidad y soporte</h5>
-              <p class="mb-0">Grupo privado para preguntas y oportunidades.</p>
-            </div>
+          <div class="step">
+            <strong>Módulo 6 – Reventa & Automatización</strong>
+            <span class="muted">Listados que venden, procesos, dashboards y escalado.</span>
           </div>
         </div>
+      </div>
+    </section>
 
-        <div class="text-center mt-4" id="checkout">
-          <!-- Este botón también aparece a los 2 min -->
-          <a id="ctaDelayed2" href="#" class="btn cta-btn btn-lg will-animate hidden">
-            Asegurar mi acceso
-          </a>
+    <!-- ======= BLOQUE 5: TESTIMONIOS ======= -->
+    <section class="wrap">
+      <div class="card pad reveal testimonial">
+        <h2>Historias Reales de Alumnos</h2>
+        <div class="quote">
+          “Entré sin experiencia. En 10 días revendí mi primer lote con 27% de utilidad. La plantilla de márgenes me salvó de sobrepagar.”
+          <div class="muted">— María G., Dallas, TX</div>
+        </div>
+        <div class="quote">
+          “Conseguí acceso, compré en storages y liquidé por Facebook Marketplace más rápido de lo esperado. El checklist es oro.”
+          <div class="muted">— Jorge R., Miami, FL</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= BLOQUE 6: FAQ (ROMPER OBJECIONES) ======= -->
+    <section class="wrap">
+      <div class="card pad reveal">
+        <h2>Preguntas Frecuentes</h2>
+        <ul class="list">
+          <li><span class="ico">?</span> <strong>¿Necesito vivir en EE. UU.?</strong> No. Te mostramos cómo abrir empresa y participar desde tu país.</li>
+          <li><span class="ico">?</span> <strong>¿Cuánto capital necesito?</strong> Puedes empezar pequeño y apalancarte con crédito empresarial.</li>
+          <li><span class="ico">?</span> <strong>¿Sirve si no tengo experiencia?</strong> Sí, el curso es paso a paso.</li>
+          <li><span class="ico">?</span> <strong>¿Queda grabado?</strong> Sí, tendrás acceso a la grabación por tiempo definido.</li>
+          <li><span class="ico">?</span> <strong>¿Incluye 1:1?</strong> No, incluye soporte en grupo privado.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ======= CTA INTERMEDIO (entre 6 y 7) ======= -->
+    <section class="wrap block-cta">
+      <button class="cta reveal" data-scroll="#checkout">Reservar mi acceso</button>
+    </section>
+
+    <!-- ======= BLOQUE 7: OFERTA + BONOS ======= -->
+    <section class="wrap" id="checkout">
+      <div class="card pad reveal">
+        <h2>Accede Hoy con Precio Especial</h2>
+        <div class="price">
+          <div><span class="strike">$997</span> <span class="tag">$297</span></div>
+          <p class="muted">Incluye: plantillas de margen, checklist por nicho, guía exprés de empresa & crédito, y acceso al grupo privado.</p>
+          <button class="cta">Sí, quiero empezar con WolfAuction</button>
+        </div>
+        <div class="divider"></div>
+        <h3>Bonos de esta edición</h3>
+        <ul class="list">
+          <li><span class="ico">+</span> Script de listados (eBay / Facebook / OfferUp).</li>
+          <li><span class="ico">+</span> 10 red flags antes de pujar.</li>
+          <li><span class="ico">+</span> Matriz de decisión por nicho.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ======= BLOQUE 8: GARANTÍA ======= -->
+    <section class="wrap">
+      <div class="card pad reveal guarantee">
+        <div class="ico" aria-hidden="true">✔</div>
+        <div>
+          <h2>Garantía sin Riesgo</h2>
+          <p class="muted">Si completas el curso y no te aporta valor aplicable, te reembolsamos el 100% el mismo día. Sin preguntas.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= BLOQUE 9: URGENCIA / COUNTDOWN ======= -->
+    <section class="wrap">
+      <div class="card pad reveal center">
+        <h2>Quedan Pocos Lugares</h2>
+        <!-- Ajusta el deadline a tu cierre real -->
+        <div class="count" id="countdown" data-deadline="2025-09-30T23:59:59-05:00">
+          <div class="box"><div id="dd">00</div><small>Días</small></div>
+          <div class="box"><div id="hh">00</div><small>Horas</small></div>
+          <div class="box"><div id="mm">00</div><small>Min</small></div>
+          <div class="box"><div id="ss">00</div><small>Seg</small></div>
+        </div>
+        <div style="margin-top:14px">
+          <button class="cta" data-scroll="#checkout">Reservar mi cupo</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======= FOOTER ======= -->
+  <footer class="wrap">
+    <div class="card pad">
+      <div class="grid">
+        <div>
+          <strong>WolfAuction</strong>
+          <p class="muted">Curso para dominar subastas en EE. UU. y crear un negocio rentable.</p>
+        </div>
+        <div class="muted">
+          Soporte: <a href="tel:+14695596166">(469) 559-6166</a> • Términos • Privacidad
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- MÓDULOS -->
-  <section class="container section">
-    <div class="row justify-content-center">
-      <div class="col-12 col-lg-10">
-        <h2 class="fw-bold text-center mb-4 will-animate hidden">Módulos del Workshop</h2>
-        <div class="row g-3 g-md-4">
-          <div class="col-lg-6 will-animate hidden">
-            <div class="card-lux p-4">
-              <h4 class="mb-3">Módulo 1 — Fundamentos que generan margen</h4>
-              <ul class="mb-0">
-                <li>Mapa de nichos: autos, pallets, storages, maquinaria, biomédicos.</li>
-                <li>Registro y verificación: Copart, IAAI, Amazon Liquidations y más.</li>
-                <li>Fórmula de <em>precio máximo</em> y comisiones ocultas.</li>
-                <li>Checklist de inspección/valoración: fotos, títulos y reportes.</li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-lg-6 will-animate hidden">
-            <div class="card-lux p-4">
-              <h4 class="mb-3">Módulo 2 — Operar, vender y escalar</h4>
-              <ul class="mb-0">
-                <li>Estrategias de puja y control emocional.</li>
-                <li>Logística: retiro, transporte, almacenamiento y “as‑is”.</li>
-                <li>Canales de reventa, pricing y rotación rápida.</li>
-                <li>Crédito empresarial express y plan de 90 días.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="text-center mt-4 will-animate hidden">
-          <!-- Tercer botón, también a los 2 min -->
-          <a id="ctaDelayed3" href="#" class="btn cta-btn btn-lg">Entrar al Workshop</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- LOGO + FOOTER -->
-  <section class="container text-center">
-    <img src="https://lh3.googleusercontent.com/a/ACg8ocLFyVn42-ugn_EvKQwi2oUBFVwfl9Z7hrF7wK5BxjNngVUaAA=s576-c-no"
-         alt="WolfAuction" class="brand-logo mb-3 will-animate hidden"/>
-  </section>
-
-  <footer class="container text-center">
-    <small>© <span id="year"></span> WolfAuction · Subastas con estrategia</small>
   </footer>
 
-  <!-- Bootstrap JS (opcional) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+  <!-- =========================
+       CARGA DEL JS EXTERNO
+       (URL RAW ya actualizada)
+  ========================== -->
   <script>
-    // Año
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Countdown 5:00 flotante
-    (function startCountdown(totalSeconds = 300){
-      const el = document.getElementById('countdown');
-      let remaining = totalSeconds;
-      const fmt = n => String(n).padStart(2, '0');
-      const tick = () => {
-        const m = Math.floor(remaining/60), s = remaining%60;
-        if (el) el.textContent = `${fmt(m)}:${fmt(s)}`;
-        if (remaining <= 0){
-          clearInterval(iv);
-          const box = el.closest('.timer-float');
-          if (box){ box.style.borderColor='rgba(242,193,78,.65)'; box.style.background='rgba(242,193,78,.15)'; }
-          return;
-        }
-        remaining--;
-      };
-      tick();
-      const iv = setInterval(tick, 1000);
-    })();
-
-    // Mostrar TODOS los CTA a los 2 minutos con animación
-    (function showCtasAfter(ms = 120000){
-      const ids = ['ctaDelayed','ctaDelayed2','ctaDelayed3'];
-      setTimeout(() => {
-        ids.forEach(id => {
-          const btn = document.getElementById(id);
-          if (!btn) return;
-          btn.style.opacity = '1';
-          btn.style.pointerEvents = 'auto';
-          btn.classList.add('pop-in');
-        });
-      }, ms);
-    })();
-
-    // Animaciones on-scroll (random)
-    (function animateOnScroll(){
-      const els = document.querySelectorAll('.will-animate');
-      const variants = ['ani-fadeUp','ani-left','ani-right','ani-zoom'];
-
-      const reveal = el => {
-        const v = variants[Math.floor(Math.random() * variants.length)];
-        el.classList.remove('hidden');
-        el.classList.add('animate-in', v);
-      };
-
-      if ('IntersectionObserver' in window){
-        const io = new IntersectionObserver((entries, obs) => {
-          entries.forEach(e => {
-            if (e.isIntersecting){ reveal(e.target); obs.unobserve(e.target); }
-          });
-        }, { threshold: 0.12 });
-        els.forEach(el => io.observe(el));
-      } else {
-        // Fallback: sin IO, mostrar todo de una
-        els.forEach(reveal);
-      }
-    })();
+    const WOLF_JS_URL = "https://raw.githubusercontent.com/gitwolfauction/web-a/main/wolfauction-landing.js";
+    const s = document.createElement('script');
+    s.src = WOLF_JS_URL;
+    s.async = true;
+    document.body.appendChild(s);
   </script>
-
-  <noscript>
-    <style>
-      /* Si JS está deshabilitado, mostramos los CTA y los bloques */
-      #ctaDelayed, #ctaDelayed2, #ctaDelayed3 { opacity:1 !important; pointer-events:auto !important; }
-      .will-animate.hidden { opacity:1 !important; transform:none !important; }
-      .timer-float { display:none; }
-    </style>
-  </noscript>
 </body>
 </html>
